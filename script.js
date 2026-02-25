@@ -30,7 +30,10 @@ const state = {
   },
   currentCatalogKey: '',
   currentItems: [],
-  leaderboard: []
+  leaderboard: [],
+  theme: 'light',
+  usedGuesses: new Set(),
+  misses: 0
 };
 
 const homePage = document.getElementById('homePage');
@@ -49,6 +52,12 @@ const addPlayerButton = document.getElementById('addPlayerButton');
 const resetLeaderboardButton = document.getElementById('resetLeaderboardButton');
 const itemTemplate = document.getElementById('itemTemplate');
 const leaderboardTemplate = document.getElementById('leaderboardTemplate');
+const guessInput = document.getElementById('guessInput');
+const submitGuessButton = document.getElementById('submitGuessButton');
+const guessFeedback = document.getElementById('guessFeedback');
+const progressText = document.getElementById('progressText');
+const usedGuessesText = document.getElementById('usedGuessesText');
+const themeToggleButton = document.getElementById('themeToggleButton');
 
 const adminTopicName = document.getElementById('adminTopicName');
 const adminTopicDescription = document.getElementById('adminTopicDescription');
@@ -63,6 +72,10 @@ function showPage(page) {
   page.classList.add('active');
 }
 
+function normalize(text) {
+  return text.toLowerCase().replace(/[^a-z0-9\s]/g, '').replace(/\s+/g, ' ').trim();
+}
+
 function shuffle(input) {
   const arr = [...input];
   for (let i = arr.length - 1; i > 0; i -= 1) {
@@ -73,8 +86,18 @@ function shuffle(input) {
 }
 
 function pickRandomTen(items) {
-  const chosen = shuffle(items).slice(0, 10);
-  return chosen.map((itemText) => ({ text: itemText, completed: false }));
+  return shuffle(items).slice(0, 10).map((itemText) => ({ answer: itemText, guessed: false }));
+}
+
+function guessedCount() {
+  return state.currentItems.filter((item) => item.guessed).length;
+}
+
+function updateProgress() {
+  progressText.textContent = `Progress: ${guessedCount()}/10 guessed • Misses: ${state.misses}`;
+  usedGuessesText.textContent = state.usedGuesses.size > 0
+    ? `Used guesses: ${Array.from(state.usedGuesses).join(', ')}`
+    : 'Used guesses: none';
 }
 
 function renderCatalog() {
@@ -85,8 +108,8 @@ function renderCatalog() {
     card.innerHTML = `
       <h3>${catalog.label}</h3>
       <p>${catalog.description}</p>
-      <p class="muted">${catalog.items.length} items in catalog</p>
-      <button class="btn primary">Start ${catalog.label} Game</button>
+      <p class="muted">${catalog.items.length} possible answers</p>
+      <button class="btn primary">Play ${catalog.label}</button>
     `;
 
     card.querySelector('button').addEventListener('click', () => startGameFromCatalog(key));
@@ -99,25 +122,12 @@ function renderItems() {
   state.currentItems.forEach((item, index) => {
     const node = itemTemplate.content.firstElementChild.cloneNode(true);
     node.querySelector('.item-label').textContent = `Top ${index + 1}`;
+    const answerNode = node.querySelector('.item-answer');
 
-    const input = node.querySelector('.item-input');
-    input.value = item.text;
-    input.addEventListener('input', (event) => {
-      state.currentItems[index].text = event.target.value;
-    });
+    answerNode.textContent = item.guessed ? item.answer : '????';
+    answerNode.classList.toggle('masked', !item.guessed);
+    node.classList.toggle('completed', item.guessed);
 
-    const button = node.querySelector('.claim-btn');
-    const sync = () => {
-      node.classList.toggle('completed', state.currentItems[index].completed);
-      button.textContent = state.currentItems[index].completed ? 'Undo' : 'Mark Complete';
-    };
-
-    button.addEventListener('click', () => {
-      state.currentItems[index].completed = !state.currentItems[index].completed;
-      sync();
-    });
-
-    sync();
     itemsGrid.appendChild(node);
   });
 }
@@ -153,13 +163,30 @@ function renderLeaderboard() {
   });
 }
 
+function resetGuessState() {
+  state.usedGuesses = new Set();
+  state.misses = 0;
+  guessInput.value = '';
+}
+
 function startGameFromCatalog(key) {
   const catalog = state.catalogs[key];
+  const uniqueItemCount = new Set(catalog.items.map((item) => normalize(item))).size;
+  if (uniqueItemCount < 10) {
+    alert('This topic needs at least 10 unique answers. Add more in Admin Page.');
+    return;
+  }
+
   state.currentCatalogKey = key;
   state.currentItems = pickRandomTen(catalog.items);
-  topicTitle.textContent = `${catalog.label} Top 10 Race`;
+  topicTitle.textContent = `${catalog.label} Top 10 Guess Race`;
   topicDescription.textContent = catalog.description;
+
+  resetGuessState();
+  guessFeedback.textContent = 'Start typing a guess to reveal Top 1–10 answers.';
+
   renderItems();
+  updateProgress();
   state.leaderboard = [];
   renderLeaderboard();
   showPage(gamePage);
@@ -169,8 +196,49 @@ function rerollCurrentGame() {
   if (!state.currentCatalogKey) {
     return;
   }
+
   state.currentItems = pickRandomTen(state.catalogs[state.currentCatalogKey].items);
+  resetGuessState();
+  guessFeedback.textContent = 'New hidden list generated. Keep guessing!';
   renderItems();
+  updateProgress();
+}
+
+function submitGuess() {
+  const rawGuess = guessInput.value.trim();
+  const guess = normalize(rawGuess);
+
+  if (!guess) {
+    guessFeedback.textContent = 'Type a guess first.';
+    return;
+  }
+
+  if (state.usedGuesses.has(guess)) {
+    guessFeedback.textContent = 'You already tried that guess. Try a new one!';
+    guessInput.value = '';
+    guessInput.focus();
+    return;
+  }
+
+  state.usedGuesses.add(guess);
+
+  const matchIndex = state.currentItems.findIndex((item) => !item.guessed && normalize(item.answer) === guess);
+  if (matchIndex >= 0) {
+    state.currentItems[matchIndex].guessed = true;
+    guessFeedback.textContent = `Correct! You revealed Top ${matchIndex + 1}: ${state.currentItems[matchIndex].answer}`;
+    renderItems();
+
+    if (guessedCount() === 10) {
+      guessFeedback.textContent = '🏆 Amazing! You guessed all top 10 answers!';
+    }
+  } else {
+    state.misses += 1;
+    guessFeedback.textContent = `Not in this top 10 list: "${rawGuess}". Keep trying!`;
+  }
+
+  updateProgress();
+  guessInput.value = '';
+  guessInput.focus();
 }
 
 function renderAdminTopicSelect() {
@@ -195,7 +263,7 @@ function renderAdminItemsPreview() {
 
   const list = catalog.items.map((item) => `<li>${item}</li>`).join('');
   adminItemsPreview.innerHTML = `
-    <p><strong>${catalog.label}</strong> currently has ${catalog.items.length} items:</p>
+    <p><strong>${catalog.label}</strong> has ${catalog.items.length} possible answers:</p>
     <ul>${list}</ul>
   `;
 }
@@ -240,10 +308,26 @@ function addItemToTopic() {
   renderAdminItemsPreview();
 }
 
+function setTheme(theme) {
+  state.theme = theme;
+  document.body.dataset.theme = theme;
+  themeToggleButton.textContent = theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode';
+}
+
+themeToggleButton.addEventListener('click', () => {
+  setTheme(state.theme === 'light' ? 'dark' : 'light');
+});
+
 rerollButton.addEventListener('click', rerollCurrentGame);
 backHomeButton.addEventListener('click', () => showPage(homePage));
 openAdminButton.addEventListener('click', () => showPage(adminPage));
 adminBackHomeButton.addEventListener('click', () => showPage(homePage));
+submitGuessButton.addEventListener('click', submitGuess);
+guessInput.addEventListener('keydown', (event) => {
+  if (event.key === 'Enter') {
+    submitGuess();
+  }
+});
 
 addPlayerButton.addEventListener('click', () => {
   state.leaderboard.push({ name: '', result: '' });
@@ -261,3 +345,4 @@ adminTopicSelect.addEventListener('change', renderAdminItemsPreview);
 
 renderCatalog();
 renderAdminTopicSelect();
+setTheme('light');

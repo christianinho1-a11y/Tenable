@@ -6,30 +6,35 @@
     <title>Top 10 Race</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
-  <body>
+  <body data-theme="light">
     <div class="backdrop-orb a"></div>
     <div class="backdrop-orb b"></div>
     <div class="backdrop-orb c"></div>
 
     <main class="app-shell">
+      <header class="top-bar card-lite">
+        <p class="muted">Peaceful Mode UI</p>
+        <button id="themeToggleButton" class="btn">Switch to Dark Mode</button>
+      </header>
+
       <section id="homePage" class="card page active">
         <header>
           <h1>Top 10 Race</h1>
-          <p class="subtitle">Pick a premade game, then race to complete all 10 first.</p>
+          <p class="subtitle">Choose a topic and guess the hidden top 10 list first.</p>
         </header>
 
         <section>
-          <h2>Choose a Game</h2>
-          <p>Quick start with Soccer, Food, or School. Each game pulls 10 random items from that catalog.</p>
+          <h2>Choose a Topic</h2>
+          <p>Pick Soccer, Food, School, or any custom admin topic. You must guess all 10 hidden answers to win.</p>
           <div id="gameCatalog" class="catalog-grid"></div>
         </section>
 
         <section class="instructions card-lite">
           <h3>How It Works</h3>
           <ol>
-            <li><strong>Step 1:</strong> Pick a game from the catalog.</li>
-            <li><strong>Step 2:</strong> Get a random top 10 challenge.</li>
-            <li><strong>Step 3:</strong> Mark items complete and track winners on the leaderboard.</li>
+            <li><strong>Step 1:</strong> Pick a topic.</li>
+            <li><strong>Step 2:</strong> Enter guesses one by one.</li>
+            <li><strong>Step 3:</strong> Reveal all 10 answers to complete the round.</li>
           </ol>
         </section>
 
@@ -40,24 +45,35 @@
         <header class="game-header">
           <div>
             <h2 id="topicTitle">Top 10 Topic</h2>
-            <p id="topicDescription">Random challenge loaded from the selected catalog.</p>
+            <p id="topicDescription">Guess the top 10 for this chosen topic.</p>
           </div>
           <div class="game-actions">
-            <button id="rerollButton" class="btn">New Random 10</button>
-            <button id="backHomeButton" class="btn">Back to Games</button>
+            <button id="rerollButton" class="btn">New Hidden 10</button>
+            <button id="backHomeButton" class="btn">Back to Topics</button>
           </div>
         </header>
 
-        <p class="notice">🏁 First person to complete all 10 wins!</p>
+        <p class="notice">🎯 You can only reveal answers by guessing correctly.</p>
+
+        <section class="guess-box card-lite">
+          <h3>Make a Guess</h3>
+          <div class="guess-controls">
+            <input id="guessInput" type="text" placeholder="Type your guess..." />
+            <button id="submitGuessButton" class="btn primary">Submit Guess</button>
+          </div>
+          <p id="guessFeedback" class="muted">Start typing a guess to reveal Top 1–10 answers.</p>
+          <p id="progressText" class="muted">Progress: 0/10 guessed • Misses: 0</p>
+          <p id="usedGuessesText" class="muted used-guesses">Used guesses: none</p>
+        </section>
 
         <section class="items-section">
-          <h3>Top 10 Challenge</h3>
+          <h3>Hidden Top 10</h3>
           <div id="itemsGrid" class="items-grid"></div>
         </section>
 
         <section class="leaderboard card-lite">
           <h3>Leaderboard / Winner</h3>
-          <p>Update names and times as players finish this round.</p>
+          <p>Track player names and final times or points.</p>
           <div id="leaderboardRows" class="leaderboard-rows"></div>
           <div class="leaderboard-actions">
             <button id="addPlayerButton" class="btn">Add Player</button>
@@ -70,9 +86,9 @@
         <header class="game-header">
           <div>
             <h2>Admin Page</h2>
-            <p>Create new game catalogs and add more tenables (possible items) to each topic.</p>
+            <p>Create new catalogs and add answer items for each topic.</p>
           </div>
-          <button id="adminBackHomeButton" class="btn">Back to Games</button>
+          <button id="adminBackHomeButton" class="btn">Back to Topics</button>
         </header>
 
         <section class="card-lite">
@@ -84,21 +100,21 @@
             </label>
             <label>
               Topic Description
-              <textarea id="adminTopicDescription" rows="2" placeholder="e.g. Great films everyone knows."></textarea>
+              <textarea id="adminTopicDescription" rows="2" placeholder="e.g. Classic films and directors."></textarea>
             </label>
           </div>
           <button id="createTopicButton" class="btn primary">Create Topic</button>
         </section>
 
         <section class="card-lite">
-          <h3>Add Tenables to Catalog</h3>
+          <h3>Add Topic Answers</h3>
           <div class="form-grid">
             <label>
               Choose Topic
               <select id="adminTopicSelect"></select>
             </label>
             <label>
-              New Tenable Item
+              New Answer Item
               <input id="adminItemInput" type="text" placeholder="e.g. Interstellar" />
             </label>
           </div>
@@ -111,8 +127,7 @@
     <template id="itemTemplate">
       <article class="item-card">
         <div class="item-label"></div>
-        <input class="item-input" type="text" />
-        <button class="claim-btn btn">Mark Complete</button>
+        <div class="item-answer masked">????</div>
       </article>
     </template>
 
