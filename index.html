@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Top 10 Race</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body data-theme="light">
+    <div class="backdrop-orb a"></div>
+    <div class="backdrop-orb b"></div>
+    <div class="backdrop-orb c"></div>
+
+    <main class="app-shell">
+      <header class="top-bar card-lite">
+        <p class="muted">Peaceful Mode UI</p>
+        <button id="themeToggleButton" class="btn">Switch to Dark Mode</button>
+      </header>
+
+      <section id="homePage" class="card page active">
+        <header>
+          <h1>Top 10 Race</h1>
+          <p class="subtitle">Choose a topic and guess the hidden top 10 list first.</p>
+        </header>
+
+        <section>
+          <h2>Choose a Topic</h2>
+          <p>Pick Soccer, Food, School, or any custom admin topic. You must guess all 10 hidden answers to win.</p>
+          <div id="gameCatalog" class="catalog-grid"></div>
+        </section>
+
+        <section class="instructions card-lite">
+          <h3>How It Works</h3>
+          <ol>
+            <li><strong>Step 1:</strong> Pick a topic.</li>
+            <li><strong>Step 2:</strong> Enter guesses one by one.</li>
+            <li><strong>Step 3:</strong> Reveal all 10 answers to complete the round.</li>
+          </ol>
+        </section>
+
+        <button id="openAdminButton" class="btn">Open Admin Page</button>
+      </section>
+
+      <section id="gamePage" class="card page">
+        <header class="game-header">
+          <div>
+            <h2 id="topicTitle">Top 10 Topic</h2>
+            <p id="topicDescription">Guess the top 10 for this chosen topic.</p>
+          </div>
+          <div class="game-actions">
+            <button id="rerollButton" class="btn">New Hidden 10</button>
+            <button id="backHomeButton" class="btn">Back to Topics</button>
+          </div>
+        </header>
+
+        <p class="notice">🎯 You can only reveal answers by guessing correctly.</p>
+
+        <section class="guess-box card-lite">
+          <h3>Make a Guess</h3>
+          <div class="guess-controls">
+            <input id="guessInput" type="text" placeholder="Type your guess..." />
+            <button id="submitGuessButton" class="btn primary">Submit Guess</button>
+          </div>
+          <p id="guessFeedback" class="muted">Start typing a guess to reveal Top 1–10 answers.</p>
+          <p id="progressText" class="muted">Progress: 0/10 guessed • Misses: 0</p>
+          <p id="usedGuessesText" class="muted used-guesses">Used guesses: none</p>
+        </section>
+
+        <section class="items-section">
+          <h3>Hidden Top 10</h3>
+          <div id="itemsGrid" class="items-grid"></div>
+        </section>
+
+        <section class="leaderboard card-lite">
+          <h3>Leaderboard / Winner</h3>
+          <p>Track player names and final times or points.</p>
+          <div id="leaderboardRows" class="leaderboard-rows"></div>
+          <div class="leaderboard-actions">
+            <button id="addPlayerButton" class="btn">Add Player</button>
+            <button id="resetLeaderboardButton" class="btn warning">Reset Leaderboard</button>
+          </div>
+        </section>
+      </section>
+
+      <section id="adminPage" class="card page">
+        <header class="game-header">
+          <div>
+            <h2>Admin Page</h2>
+            <p>Create new catalogs and add answer items for each topic.</p>
+          </div>
+          <button id="adminBackHomeButton" class="btn">Back to Topics</button>
+        </header>
+
+        <section class="card-lite">
+          <h3>Create Catalog Topic</h3>
+          <div class="form-grid">
+            <label>
+              Topic Name
+              <input id="adminTopicName" type="text" placeholder="e.g. Movies" />
+            </label>
+            <label>
+              Topic Description
+              <textarea id="adminTopicDescription" rows="2" placeholder="e.g. Classic films and directors."></textarea>
+            </label>
+          </div>
+          <button id="createTopicButton" class="btn primary">Create Topic</button>
+        </section>
+
+        <section class="card-lite">
+          <h3>Add Topic Answers</h3>
+          <div class="form-grid">
+            <label>
+              Choose Topic
+              <select id="adminTopicSelect"></select>
+            </label>
+            <label>
+              New Answer Item
+              <input id="adminItemInput" type="text" placeholder="e.g. Interstellar" />
+            </label>
+          </div>
+          <button id="addItemButton" class="btn primary">Add Item</button>
+          <div id="adminItemsPreview" class="admin-items-preview"></div>
+        </section>
+      </section>
+    </main>
+
+    <template id="itemTemplate">
+      <article class="item-card">
+        <div class="item-label"></div>
+        <div class="item-answer masked">????</div>
+      </article>
+    </template>
+
+    <template id="leaderboardTemplate">
+      <div class="leader-row">
+        <input class="player-name" type="text" placeholder="Player name" />
+        <input class="player-time" type="text" placeholder="Time / Points" />
+        <button class="remove-player btn">Remove</button>
+      </div>
+    </template>
+
+    <script src="script.js"></script>
+  </body>
+</html>
