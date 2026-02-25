@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Top 10 Race</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section id="homePage" class="card page active">
+        <header>
+          <h1>Top 10 Race</h1>
+          <p class="subtitle">Pick a topic, invite friends, and race to complete the top 10 list!</p>
+        </header>
+
+        <div class="form-grid">
+          <label>
+            Topic Name
+            <input id="topicInput" type="text" placeholder="e.g. Soccer Teams" />
+          </label>
+          <label>
+            Topic Description
+            <textarea id="descriptionInput" rows="3" placeholder="e.g. Guess the top teams of all time."></textarea>
+          </label>
+        </div>
+
+        <button id="startGameButton" class="btn primary">Start a New Game</button>
+
+        <section class="instructions">
+          <h2>How It Works</h2>
+          <ol>
+            <li><strong>Step 1:</strong> Choose a topic and make a top 10 list.</li>
+            <li><strong>Step 2:</strong> Share the game link with friends.</li>
+            <li><strong>Step 3:</strong> They race to complete all 10 spots first.</li>
+          </ol>
+        </section>
+      </section>
+
+      <section id="gamePage" class="card page">
+        <header class="game-header">
+          <div>
+            <h2 id="topicTitle">Top 10 Topic</h2>
+            <p id="topicDescription">Add your topic description to begin.</p>
+          </div>
+          <button id="newTopicButton" class="btn">Play Again / New Topic</button>
+        </header>
+
+        <p class="notice">🏁 First person to complete all 10 wins!</p>
+
+        <section class="items-section">
+          <h3>Top 10 List (Editable)</h3>
+          <div id="itemsGrid" class="items-grid"></div>
+        </section>
+
+        <section class="invite card-lite">
+          <h3>Join / Invite</h3>
+          <p>Share this with your friends so they can join the race!</p>
+          <div class="invite-row">
+            <input id="shareLink" type="text" readonly />
+            <button id="copyLinkButton" class="btn">Copy Link</button>
+          </div>
+          <p class="code">Game Code: <span id="gameCode">TOP10-0000</span></p>
+        </section>
+
+        <section class="how-to card-lite">
+          <h3>How to Play</h3>
+          <ul>
+            <li>Edit each slot with your top 10 item or leave it blank for guessing.</li>
+            <li>Players claim/check off items as they complete them.</li>
+            <li>Track finish order in the leaderboard below.</li>
+          </ul>
+        </section>
+
+        <section class="leaderboard card-lite">
+          <h3>Leaderboard / Winner</h3>
+          <p>Update names and times as players finish.</p>
+          <div id="leaderboardRows" class="leaderboard-rows"></div>
+          <div class="leaderboard-actions">
+            <button id="addPlayerButton" class="btn">Add Player</button>
+            <button id="resetLeaderboardButton" class="btn warning">Reset Leaderboard</button>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <template id="itemTemplate">
+      <article class="item-card">
+        <div class="item-label"></div>
+        <input class="item-input" type="text" placeholder="Type item here..." />
+        <button class="claim-btn btn">Mark Complete</button>
+      </article>
+    </template>
+
+    <template id="leaderboardTemplate">
+      <div class="leader-row">
+        <input class="player-name" type="text" placeholder="Player name" />
+        <input class="player-time" type="text" placeholder="Time / Points" />
+        <button class="remove-player btn">Remove</button>
+      </div>
+    </template>
+
+    <script src="script.js"></script>
+  </body>
+</html>
