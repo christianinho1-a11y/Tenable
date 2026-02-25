@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Top 10 Guessing Game</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="game-shell">
+      <section class="card">
+        <header class="title-area">
+          <h1>Top 10 Guessing Game</h1>
+          <p id="categoryText" class="category">Category: Top 10 clubs with the most Premier League titles</p>
+        </header>
+
+        <section class="status-panel">
+          <div class="status-row">
+            <p class="status-label">Lives:</p>
+            <p id="livesText" class="lives" aria-live="polite">❤️❤️❤️</p>
+          </div>
+          <div class="status-row">
+            <p class="status-label">Correct guesses:</p>
+            <p id="scoreText" aria-live="polite">0 / 10</p>
+          </div>
+          <div class="status-row">
+            <p class="status-label">Best score:</p>
+            <p id="bestScoreText">N/A</p>
+          </div>
+        </section>
+
+        <section>
+          <h2>Top 10 Slots</h2>
+          <div id="slotsGrid" class="slots-grid"></div>
+        </section>
+
+        <section class="guess-area">
+          <label for="guessInput">Enter your guess</label>
+          <div class="guess-controls">
+            <input id="guessInput" type="text" placeholder="e.g. Manchester United" autocomplete="off" />
+            <button id="submitGuessButton" class="btn">Submit Guess</button>
+          </div>
+        </section>
+
+        <p id="feedbackText" class="feedback info" aria-live="polite">Start guessing clubs!</p>
+
+        <section id="endArea" class="end-area hidden">
+          <h3 id="endMessage"></h3>
+          <p>Full Top 10 List:</p>
+          <ol id="fullAnswerList"></ol>
+          <button id="playAgainButton" class="btn">Play Again</button>
+        </section>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
