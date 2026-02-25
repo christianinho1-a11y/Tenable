@@ -1,30 +1,66 @@
 const state = {
   catalogs: {
-    soccer: {
-      label: 'Soccer',
-      description: 'Legendary clubs, players, and moments.',
+    patch: {
+      label: 'Patch Compliance',
+      description: 'Catalog expects critical patches; scan reveals what is missing.',
       items: [
-        'Lionel Messi', 'Cristiano Ronaldo', 'Pelé', 'Diego Maradona', 'Real Madrid',
-        'FC Barcelona', 'Manchester United', 'Champions League', 'World Cup', 'Zinedine Zidane',
-        'Kylian Mbappé', 'Brazil', 'Argentina', 'Johan Cruyff', 'Sergio Ramos'
+        'Missing critical patch',
+        'Outdated OS version',
+        'Unsupported software version',
+        'Unpatched remote code execution CVE',
+        'Kernel security update missing',
+        'Browser patch overdue',
+        'Database patch level behind baseline',
+        'Zero-day mitigation missing',
+        'Endpoint agent out of date',
+        'Firmware security patch missing',
+        'Patch management service disabled',
+        'High severity patch delayed',
+        'Rollback to vulnerable build detected',
+        'Manual patch exceptions expired',
+        'Reboot pending after security update'
       ]
     },
-    food: {
-      label: 'Food',
-      description: 'Popular foods from around the world.',
+    config: {
+      label: 'Configuration Baseline',
+      description: 'Catalog policy states secure settings; scan identifies drift.',
       items: [
-        'Pizza', 'Burger', 'Tacos', 'Sushi', 'Pasta',
-        'Fried Rice', 'Ice Cream', 'Ramen', 'Steak', 'Fries',
-        'Burrito', 'Dumplings', 'Pancakes', 'Chicken Wings', 'Lasagna'
+        'Insecure TLS version enabled',
+        'Weak password policy configured',
+        'Default credentials still active',
+        'MFA not enforced for admins',
+        'Open management port exposed',
+        'Firewall rule too permissive',
+        'Unencrypted data at rest',
+        'Audit logging disabled',
+        'Unused privileged account active',
+        'Public storage bucket detected',
+        'SSH root login enabled',
+        'RDP open to internet',
+        'Certificate expired',
+        'Least privilege policy violated',
+        'Configuration baseline mismatch'
       ]
     },
-    school: {
-      label: 'School',
-      description: 'Classroom topics, tools, and school life.',
+    inventory: {
+      label: 'Asset Inventory',
+      description: 'Catalog tracks approved assets; scan catches unknown or missing devices.',
       items: [
-        'Math', 'Science', 'History', 'Notebook', 'Exam',
-        'Homework', 'Project', 'Presentation', 'Library', 'Calculator',
-        'Classroom', 'Essay', 'Geography', 'Art', 'Chemistry'
+        'Unauthorized device discovered',
+        'Expected asset missing from network',
+        'Duplicate asset identity detected',
+        'Decommissioned host still online',
+        'Unknown cloud instance found',
+        'Shadow IT application detected',
+        'Unmanaged endpoint discovered',
+        'Asset owner not assigned',
+        'Critical server not in CMDB',
+        'Unexpected open port on known asset',
+        'Rogue wireless access point',
+        'Expired agent heartbeat',
+        'Asset classification mismatch',
+        'Third-party system untracked',
+        'Privileged account tied to unknown host'
       ]
     }
   },
@@ -108,8 +144,8 @@ function renderCatalog() {
     card.innerHTML = `
       <h3>${catalog.label}</h3>
       <p>${catalog.description}</p>
-      <p class="muted">${catalog.items.length} possible answers</p>
-      <button class="btn primary">Play ${catalog.label}</button>
+      <p class="muted">${catalog.items.length} expected findings</p>
+      <button class="btn primary">Assess ${catalog.label}</button>
     `;
 
     card.querySelector('button').addEventListener('click', () => startGameFromCatalog(key));
@@ -173,17 +209,17 @@ function startGameFromCatalog(key) {
   const catalog = state.catalogs[key];
   const uniqueItemCount = new Set(catalog.items.map((item) => normalize(item))).size;
   if (uniqueItemCount < 10) {
-    alert('This topic needs at least 10 unique answers. Add more in Admin Page.');
+    alert('This catalog needs at least 10 unique findings. Add more in Admin Page.');
     return;
   }
 
   state.currentCatalogKey = key;
   state.currentItems = pickRandomTen(catalog.items);
-  topicTitle.textContent = `${catalog.label} Top 10 Guess Race`;
+  topicTitle.textContent = `${catalog.label} Top 10 Findings`;
   topicDescription.textContent = catalog.description;
 
   resetGuessState();
-  guessFeedback.textContent = 'Start typing a guess to reveal Top 1–10 answers.';
+  guessFeedback.textContent = 'Start typing to reveal Top 1–10 findings.';
 
   renderItems();
   updateProgress();
@@ -199,7 +235,7 @@ function rerollCurrentGame() {
 
   state.currentItems = pickRandomTen(state.catalogs[state.currentCatalogKey].items);
   resetGuessState();
-  guessFeedback.textContent = 'New hidden list generated. Keep guessing!';
+  guessFeedback.textContent = 'New hidden findings generated. Keep assessing!';
   renderItems();
   updateProgress();
 }
@@ -209,7 +245,7 @@ function submitGuess() {
   const guess = normalize(rawGuess);
 
   if (!guess) {
-    guessFeedback.textContent = 'Type a guess first.';
+    guessFeedback.textContent = 'Type a finding guess first.';
     return;
   }
 
@@ -225,15 +261,15 @@ function submitGuess() {
   const matchIndex = state.currentItems.findIndex((item) => !item.guessed && normalize(item.answer) === guess);
   if (matchIndex >= 0) {
     state.currentItems[matchIndex].guessed = true;
-    guessFeedback.textContent = `Correct! You revealed Top ${matchIndex + 1}: ${state.currentItems[matchIndex].answer}`;
+    guessFeedback.textContent = `Correct! Top ${matchIndex + 1}: ${state.currentItems[matchIndex].answer}`;
     renderItems();
 
     if (guessedCount() === 10) {
-      guessFeedback.textContent = '🏆 Amazing! You guessed all top 10 answers!';
+      guessFeedback.textContent = '✅ Assessment complete! You found all top 10 findings.';
     }
   } else {
     state.misses += 1;
-    guessFeedback.textContent = `Not in this top 10 list: "${rawGuess}". Keep trying!`;
+    guessFeedback.textContent = `No match for: "${rawGuess}". Keep comparing expected vs actual.`;
   }
 
   updateProgress();
@@ -257,13 +293,13 @@ function renderAdminItemsPreview() {
   const selected = adminTopicSelect.value;
   const catalog = state.catalogs[selected];
   if (!catalog) {
-    adminItemsPreview.textContent = 'No topic selected.';
+    adminItemsPreview.textContent = 'No catalog selected.';
     return;
   }
 
   const list = catalog.items.map((item) => `<li>${item}</li>`).join('');
   adminItemsPreview.innerHTML = `
-    <p><strong>${catalog.label}</strong> has ${catalog.items.length} possible answers:</p>
+    <p><strong>${catalog.label}</strong> has ${catalog.items.length} expected findings:</p>
     <ul>${list}</ul>
   `;
 }
@@ -282,7 +318,7 @@ function createTopic() {
 
   state.catalogs[key] = {
     label,
-    description: description || 'Custom topic created in admin.',
+    description: description || 'Custom catalog created in admin.',
     items: []
   };
 
