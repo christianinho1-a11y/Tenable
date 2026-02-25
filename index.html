@@ -3,181 +3,55 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tenable Catalog Race</title>
+    <title>Top 10 Guessing Game</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
-  <body data-theme="light">
-    <div class="backdrop-orb a"></div>
-    <div class="backdrop-orb b"></div>
-    <div class="backdrop-orb c"></div>
-
-    <main class="app-shell">
-      <header class="top-bar card-lite">
-        <p class="muted">Tenable-style Catalog vs Actual Simulator</p>
-        <button id="themeToggleButton" class="btn">Switch to Dark Mode</button>
-      </header>
-
-      <section id="homePage" class="card page active">
-        <header>
-          <h1>Tenable Catalog Race</h1>
-          <p class="subtitle">Pick a catalog and guess the top 10 findings Tenable would flag.</p>
+  <body>
+    <main class="game-shell">
+      <section class="card">
+        <header class="title-area">
+          <h1>Top 10 Guessing Game</h1>
+          <p id="categoryText" class="category">Category: Top 10 clubs with the most Premier League titles</p>
         </header>
+
+        <section class="status-panel">
+          <div class="status-row">
+            <p class="status-label">Lives:</p>
+            <p id="livesText" class="lives" aria-live="polite">❤️❤️❤️</p>
+          </div>
+          <div class="status-row">
+            <p class="status-label">Correct guesses:</p>
+            <p id="scoreText" aria-live="polite">0 / 10</p>
+          </div>
+          <div class="status-row">
+            <p class="status-label">Best score:</p>
+            <p id="bestScoreText">N/A</p>
+          </div>
+        </section>
 
         <section>
-          <h2>Choose a Catalog Scenario</h2>
-          <p>Each round represents expected catalog rules vs actual scan results. Guess all 10 findings to complete the assessment.</p>
-          <div id="gameCatalog" class="catalog-grid"></div>
+          <h2>Top 10 Slots</h2>
+          <div id="slotsGrid" class="slots-grid"></div>
         </section>
 
-        <section class="instructions card-lite">
-          <h3>⭐ How Tenable Works With a Catalog</h3>
-          <ol>
-            <li><strong>Catalog:</strong> Defines what should exist and how it should be configured.</li>
-            <li><strong>Scan:</strong> Tenable discovers what actually exists in the environment.</li>
-            <li><strong>Compare:</strong> Expected vs actual differences become findings.</li>
-            <li><strong>Report:</strong> Teams get prioritized vulnerability/compliance remediation lists.</li>
-          </ol>
-
-          <div class="compare-table-wrap">
-            <table class="compare-table">
-              <thead>
-                <tr>
-                  <th>Expected (Catalog)</th>
-                  <th>Actual (Scan)</th>
-                  <th>Tenable Reaction</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Device should have patch X</td>
-                  <td>Patch missing</td>
-                  <td>Flag vulnerability</td>
-                </tr>
-                <tr>
-                  <td>Only approved software allowed</td>
-                  <td>Unapproved software found</td>
-                  <td>Flag noncompliance</td>
-                </tr>
-                <tr>
-                  <td>Certain ports must be closed</td>
-                  <td>Port open</td>
-                  <td>Flag exposure</td>
-                </tr>
-                <tr>
-                  <td>Asset should exist</td>
-                  <td>Asset missing</td>
-                  <td>Flag as lost/decommissioned</td>
-                </tr>
-                <tr>
-                  <td>Asset should not exist</td>
-                  <td>Unknown device found</td>
-                  <td>Flag unauthorized asset</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        <button id="openAdminButton" class="btn">Open Admin Page</button>
-      </section>
-
-      <section id="gamePage" class="card page">
-        <header class="game-header">
-          <div>
-            <h2 id="topicTitle">Catalog Scenario</h2>
-            <p id="topicDescription">Guess the top 10 findings for this selected catalog.</p>
-          </div>
-          <div class="game-actions">
-            <button id="rerollButton" class="btn">New Hidden 10</button>
-            <button id="backHomeButton" class="btn">Back to Catalogs</button>
-          </div>
-        </header>
-
-        <p class="notice">🎯 Reveal findings only by correct guesses (catalog expected vs actual mismatch).</p>
-
-        <section class="guess-box card-lite">
-          <h3>Submit a Finding Guess</h3>
+        <section class="guess-area">
+          <label for="guessInput">Enter your guess</label>
           <div class="guess-controls">
-            <input id="guessInput" type="text" placeholder="e.g. Missing critical patch" />
-            <button id="submitGuessButton" class="btn primary">Submit Guess</button>
-          </div>
-          <p id="guessFeedback" class="muted">Start typing to reveal Top 1–10 findings.</p>
-          <p id="progressText" class="muted">Progress: 0/10 guessed • Misses: 0</p>
-          <p id="usedGuessesText" class="muted used-guesses">Used guesses: none</p>
-        </section>
-
-        <section class="items-section">
-          <h3>Hidden Top 10 Findings</h3>
-          <div id="itemsGrid" class="items-grid"></div>
-        </section>
-
-        <section class="leaderboard card-lite">
-          <h3>Risk Triage Board</h3>
-          <p>Track analyst name and remediation status/time.</p>
-          <div id="leaderboardRows" class="leaderboard-rows"></div>
-          <div class="leaderboard-actions">
-            <button id="addPlayerButton" class="btn">Add Analyst</button>
-            <button id="resetLeaderboardButton" class="btn warning">Reset Board</button>
+            <input id="guessInput" type="text" placeholder="e.g. Manchester United" autocomplete="off" />
+            <button id="submitGuessButton" class="btn">Submit Guess</button>
           </div>
         </section>
-      </section>
 
-      <section id="adminPage" class="card page">
-        <header class="game-header">
-          <div>
-            <h2>Admin Page</h2>
-            <p>Create new catalogs and add expected findings for each scenario.</p>
-          </div>
-          <button id="adminBackHomeButton" class="btn">Back to Catalogs</button>
-        </header>
+        <p id="feedbackText" class="feedback info" aria-live="polite">Start guessing clubs!</p>
 
-        <section class="card-lite">
-          <h3>Create Catalog Topic</h3>
-          <div class="form-grid">
-            <label>
-              Catalog Name
-              <input id="adminTopicName" type="text" placeholder="e.g. Cloud Compliance" />
-            </label>
-            <label>
-              Catalog Description
-              <textarea id="adminTopicDescription" rows="2" placeholder="e.g. Baseline rules for production cloud workloads."></textarea>
-            </label>
-          </div>
-          <button id="createTopicButton" class="btn primary">Create Catalog</button>
-        </section>
-
-        <section class="card-lite">
-          <h3>Add Expected Finding</h3>
-          <div class="form-grid">
-            <label>
-              Choose Catalog
-              <select id="adminTopicSelect"></select>
-            </label>
-            <label>
-              New Finding Item
-              <input id="adminItemInput" type="text" placeholder="e.g. Unapproved software installed" />
-            </label>
-          </div>
-          <button id="addItemButton" class="btn primary">Add Finding</button>
-          <div id="adminItemsPreview" class="admin-items-preview"></div>
+        <section id="endArea" class="end-area hidden">
+          <h3 id="endMessage"></h3>
+          <p>Full Top 10 List:</p>
+          <ol id="fullAnswerList"></ol>
+          <button id="playAgainButton" class="btn">Play Again</button>
         </section>
       </section>
     </main>
-
-    <template id="itemTemplate">
-      <article class="item-card">
-        <div class="item-label"></div>
-        <div class="item-answer masked">????</div>
-      </article>
-    </template>
-
-    <template id="leaderboardTemplate">
-      <div class="leader-row">
-        <input class="player-name" type="text" placeholder="Analyst" />
-        <input class="player-time" type="text" placeholder="Fix time / Priority" />
-        <button class="remove-player btn">Remove</button>
-      </div>
-    </template>
 
     <script src="script.js"></script>
   </body>
